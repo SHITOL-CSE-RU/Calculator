@@ -103,6 +103,7 @@ class Calculator:
     def square(self):
         self.current_expression = str(eval(f"{self.current_expression}**2"))
         self.update_label()
+
     def create_square_button(self):
         button = tk.Button(self.buttons_frame, text="x\u00b2", bg=OFF_WHITE, fg=LABEL_COLOR, font=DIGITS_FONT_STYLE,
                            borderwidth=0, command=self.square)
@@ -111,6 +112,7 @@ class Calculator:
     def sqrt(self):
         self.current_expression = str(eval(f"{self.current_expression}**0.5"))
         self.update_label()
+
     def create_sqrt_button(self):
         button = tk.Button(self.buttons_frame, text="\u221ax", bg=OFF_WHITE, fg=LABEL_COLOR, font=DIGITS_FONT_STYLE,
                            borderwidth=0, command=self.sqrt)
@@ -119,9 +121,13 @@ class Calculator:
     def evaluate(self):
         self.total_expression += self.current_expression
         self.update_total_label()
-        self.current_expression = str(eval(self.total_expression))
-        self.total_expression = ""
-        self.update_label()
+        try:
+            self.current_expression = str(eval(self.total_expression))
+            self.total_expression = ""
+        except Exception as e:
+            self.current_expression = "Error"
+        finally:
+            self.update_label()
 
     def create_equals_button(self):
         button = tk.Button(self.buttons_frame, text="=", bg=LIGHT_BLUE, fg=LABEL_COLOR, font=DIGITS_FONT_STYLE,
@@ -134,10 +140,13 @@ class Calculator:
         return frame
 
     def update_total_label(self):
-        self.total_label.config(text=self.total_expression)
+        expression = self.total_expression
+        for operator, symbol in self.operations.items():
+            expression = expression.replace(operator, f'{symbol}')
+        self.total_label.config(text=expression)
 
     def update_label(self):
-        self.label.config(text=self.current_expression)
+        self.label.config(text=self.current_expression[:11])
 
     def run(self):
         self.window.mainloop()
